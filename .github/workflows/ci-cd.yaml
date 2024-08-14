@@ -11,29 +11,29 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3 # Updated to latest version
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2 # Updated to latest version
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Log in to ECR
       run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 008971675564.dkr.ecr.us-east-1.amazonaws.com
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Build Docker Image
       run: |
-        docker build -t 008971675564.dkr.ecr.us-east-1.amazonaws.com/accuknox:latest .
+        docker build -t 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/accuknox:latest .
 
     - name: Push Docker Image to ECR
       run: |
-        docker push 008971675564.dkr.ecr.us-east-1.amazonaws.com/accuknox:latest
+        docker push 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/accuknox:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,6 +41,17 @@ jobs:
     environment: production
 
     steps:
+    - name: Verify Cloned Files
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Listing all files:"
+        ls -la
+        echo "Finding deployment.yaml:"
+        find . -name "deployment.yaml"
+        echo "Finding service.yaml:"
+        find . -name "service.yaml"
+
     - name: Install kubectl
       run: |
         curl -LO "https://dl.k8s.io/release/v1.20.0/bin/linux/amd64/kubectl"
@@ -56,14 +67,14 @@ jobs:
 
     - name: Update kubeconfig for EKS
       run: |
-        aws eks update-kubeconfig --name ramya-cluster --region us-east-1
+        aws eks update-kubeconfig --name ramya-cluster --region ${{ secrets.AWS_REGION }}
         kubectl config current-context # Verify current context
 
     - name: Apply Kubernetes YAML Files
       run: |
-        kubectl apply -f deployment.yaml -n wisecow
-        kubectl apply -f service.yaml -n wisecow
-
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
+     
     - name: Check Deployment Status
       run: |
         kubectl rollout status deployment/wisecow-deployment
