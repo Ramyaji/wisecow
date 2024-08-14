@@ -71,21 +71,20 @@ jobs:
     - name: check kubectl connection with cluster
       run: |
         kubectl get po -A
-    - name: Verify Cloned Files
+    
+   
+
+    - name: List files for debugging
       run: |
-       echo "Current directory:"
-       pwd
-       echo "Listing all files:"
-       ls -la /home/runner/work/wisecow/wisecow
-       echo "Finding deployment.yaml:"
-       find /home/runner/work/wisecow/wisecow -name "deployment.yaml"
-       echo "Finding service.yaml:"
-       find /home/runner/work/wisecow/wisecow -name "service.yaml"
+       echo "Listing files in working directory:"
+       ls -l
+       echo "Listing files in wisecow directory:"
+       ls -l /
 
     - name: Apply Kubernetes YAML Files
       run: |
-        kubectl apply -f wisecow/deployment.yaml
-        kubectl apply -f wisecow/service.yaml
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
 
     - name: Check Deployment Status
       run: |
