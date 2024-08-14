@@ -67,9 +67,20 @@ jobs:
         kubectl config view
         kubectl config get-contexts
         kubectl config current-context
+        
     - name: check kubectl connection with cluster
       run: |
         kubectl get po -A
+    - name: Verify Cloned Files
+      run: |
+       echo "Current directory:"
+       pwd
+       echo "Listing all files:"
+       ls -la /home/runner/work/wisecow/wisecow
+       echo "Finding deployment.yaml:"
+       find /home/runner/work/wisecow/wisecow -name "deployment.yaml"
+       echo "Finding service.yaml:"
+       find /home/runner/work/wisecow/wisecow -name "service.yaml"
 
     - name: Apply Kubernetes YAML Files
       run: |
