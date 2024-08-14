@@ -74,12 +74,7 @@ jobs:
     
    
 
-    - name: List files for debugging
-      run: |
-       echo "Listing files in working directory:"
-       ls -l
-       echo "Listing files in wisecow directory:"
-       ls -l /
+    
 
     - name: Apply Kubernetes YAML Files
       run: |
