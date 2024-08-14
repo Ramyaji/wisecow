@@ -59,9 +59,6 @@ jobs:
       run: |
         aws eks update-kubeconfig --name ramya-cluster --region us-east-1
         kubectl config current-context # Verify current context
-        
-    - name: List files in k8s directory
-      run: ls -la k8s
 
     - name: Apply Kubernetes YAML Files
       run: |
