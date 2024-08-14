@@ -57,7 +57,7 @@ jobs:
 
     - name: Update kubeconfig for EKS
       run: |
-        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        aws eks update-kubeconfig --name ramya-cluster --region us-east-1
         kubectl config current-context # Verify current context
 
     - name: Apply Kubernetes YAML Files
