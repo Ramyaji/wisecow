@@ -69,7 +69,7 @@ jobs:
         kubectl config current-context
     - name: check kubectl connection with cluster
       run: |
-        kubectl get po - A
+        kubectl get po -A
 
     - name: Apply Kubernetes YAML Files
       run: |
