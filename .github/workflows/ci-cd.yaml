@@ -72,8 +72,8 @@ jobs:
 
     - name: Apply Kubernetes YAML Files
       run: |
-        kubectl apply -f /home/runner/work/wisecow/wisecow/deployment.yaml # Updated path
-        kubectl apply -f /home/runner/work/wisecow/wisecow/service.yaml    # Updated path
+        kubectl apply -f /home/runner/work/wisecow/deployment.yaml # Updated path
+        kubectl apply -f /home/runner/work/wisecow/service.yaml    # Updated path
      
     - name: Check Deployment Status
       run: |
