@@ -11,33 +11,29 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
-      
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: actions/checkout@v3
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Log in to ECR
       run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 008971675564.dkr.ecr.us-east-1.amazonaws.com
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     - name: Build Docker Image
       run: |
-        docker build -t 008971675564.dkr.ecr.us-east-1.amazonaws.com/accuknox:latest .
+        docker build -t 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/accuknox:latest .
 
     - name: Push Docker Image to ECR
       run: |
-        docker push 008971675564.dkr.ecr.us-east-1.amazonaws.com/accuknox:latest
+        docker push 008971675564.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/accuknox:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,6 +41,10 @@ jobs:
     environment: production
 
     steps:
+    - name: Remove Old kubeconfig
+      run: |
+        rm -f ~/.kube/config
+
     - name: Install kubectl
       run: |
         curl -LO "https://dl.k8s.io/release/v1.20.0/bin/linux/amd64/kubectl"
@@ -61,13 +61,20 @@ jobs:
     - name: Update kubeconfig for EKS
       run: |
         aws eks update-kubeconfig --name ramya-cluster --region us-east-1
-        kubectl config current-context # Verify current context
+
+    - name: Verify kubeconfig
+      run: |
+        kubectl config view
+        kubectl config get-contexts
+        kubectl config current-context
+    - name: check kubectl connection with cluster
+      run: |
+        sudo kubectl get po - A
 
     - name: Apply Kubernetes YAML Files
       run: |
-        sudo kubectl apply -f /home/runner/work/wisecow/wisecow/deployment.yaml 
-        sudo kubectl apply -f /home/runner/work/wisecow/wisecow/service.yaml 
-     
+        kubectl apply -f /home/runner/work/wisecow/wisecow/deployment.yaml
+        kubectl apply -f /home/runner/work/wisecow/wisecow/service.yaml
 
     - name: Check Deployment Status
       run: |
