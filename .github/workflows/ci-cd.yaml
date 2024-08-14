@@ -48,9 +48,9 @@ jobs:
         echo "Listing all files:"
         ls -la
         echo "Finding deployment.yaml:"
-        find . -name "deployment.yaml"
+        find . -name "/home/runner/work/wisecow/wisecow/deployment.yaml"
         echo "Finding service.yaml:"
-        find . -name "service.yaml"
+        find . -name "/home/runner/work/wisecow/wisecow/service.yaml"
 
     - name: Install kubectl
       run: |
@@ -72,8 +72,8 @@ jobs:
 
     - name: Apply Kubernetes YAML Files
       run: |
-        kubectl apply -f /home/runner/work/wisecow/deployment.yaml # Updated path
-        kubectl apply -f /home/runner/work/wisecow/service.yaml    # Updated path
+        kubectl apply -f deployment.yaml # Updated path
+        kubectl apply -f service.yaml    # Updated path
      
     - name: Check Deployment Status
       run: |
