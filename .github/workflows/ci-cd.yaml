@@ -13,13 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Verify Cloned Files
-      run: |
-        pwd
-        ls -la
-        sudo find / -name "deployment.yaml"
-        sudo find / -name "service.yaml"
-
+    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
@@ -71,8 +65,8 @@ jobs:
 
     - name: Apply Kubernetes YAML Files
       run: |
-        kubectl apply -f /home/ec2-user/wisecow/deployment.yaml 
-        kubectl apply -f /home/ec2-user/wisecow/service.yaml 
+        sudo kubectl apply -f /home/runner/work/wisecow/wisecow/deployment.yaml 
+        sudo kubectl apply -f /home/runner/work/wisecow/wisecow/service.yaml 
      
 
     - name: Check Deployment Status
